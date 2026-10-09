@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seguridad vial en Riberalta · huella</title>
+<style>
+:root{--bg:#f3f6fa;--card:#fff;--ink:#14284b;--mute:#4a5d7c;--bar:#1f77b4;--bar2:#e8a317;--line:#d5dde9;--track:#e8eef6;--ok:#1e9e5a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1829;--card:#18243b;--ink:#e8eefb;--mute:#9fb1cf;--bar:#4fa3e0;--bar2:#f0b840;--line:#2b3b58;--track:#223250;--ok:#3ecf86}}
+:root[data-theme="dark"]{--bg:#0f1829;--card:#18243b;--ink:#e8eefb;--mute:#9fb1cf;--bar:#4fa3e0;--bar2:#f0b840;--line:#2b3b58;--track:#223250;--ok:#3ecf86}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS",Verdana,system-ui,sans-serif;line-height:1.45}
+main{max-width:720px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.7rem;margin:0}
+.sub{color:var(--mute);margin:4px 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card h2{font-size:1.05rem;margin:0 0 12px}
+.stats{display:flex;gap:16px;justify-content:space-between;align-items:center;margin-bottom:6px}
+.stats b{font-size:2rem;line-height:1}
+.stats span{display:block;font-size:.8rem;color:var(--mute)}
+.pad{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+#fp{position:relative;width:132px;height:132px;border-radius:50%;border:3px solid var(--bar);background:var(--track);color:var(--bar);display:grid;place-items:center;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden;padding:0}
+#fp svg{width:84px;height:84px;pointer-events:none}
+#fp .scan{position:absolute;left:0;right:0;height:3px;background:var(--ok);box-shadow:0 0 12px var(--ok);top:0;opacity:0}
+#fp.holding .scan{opacity:1;animation:sc 1s linear infinite alternate}
+#fp.holding{color:var(--ok);border-color:var(--ok)}
+#fp.done{color:#fff;background:var(--ok);border-color:var(--ok)}
+@keyframes sc{from{top:4%}to{top:94%}}
+button:focus-visible{outline:3px solid var(--bar2);outline-offset:2px}
+.prog{width:180px;height:6px;background:var(--track);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ok)}
+#msg{font-size:.9rem;color:var(--mute);min-height:1.3em}
+#form{display:none}
+#form.show{display:block}
+.q{margin-bottom:14px}
+.q p{margin:0 0 6px;font-size:.95rem;font-weight:700}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts button{border:1px solid var(--line);background:var(--track);color:var(--ink);font:inherit;font-size:.88rem;padding:8px 12px;border-radius:999px;cursor:pointer}
+.opts button[aria-pressed="true"]{background:var(--bar);border-color:var(--bar);color:#fff;font-weight:700}
+.ru{margin-bottom:14px}
+.ru label{display:block;font-size:.95rem;font-weight:700;margin-bottom:6px}
+.ru input{width:100%;font:inherit;font-size:1.1rem;letter-spacing:.08em;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--track);color:var(--ink)}
+.ru input:focus-visible{outline:3px solid var(--bar2);outline-offset:2px}
+.ru small{display:block;margin-top:5px;font-size:.8rem;color:var(--mute);min-height:1.1em}
+.ru small.err{color:#d64545;font-weight:700}
+#regs{font-size:.9rem;max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:0 10px}
+#regs>div{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+#regs>div:last-child{border-bottom:0}
+#regs span{color:var(--mute)}
+.hidden{display:none!important}
+.adm textarea{width:100%;min-height:130px;font:inherit;font-size:.85rem;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--track);color:var(--ink)}
+.adm .bt{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.adm .bt button{flex:1;min-width:130px;border:1px solid var(--line);background:var(--track);color:var(--ink);font:inherit;padding:10px;border-radius:10px;cursor:pointer}
+.adm .bt button.p{background:var(--bar);border-color:var(--bar);color:#fff;font-weight:700}
+.adm small{display:block;margin-top:6px;color:var(--mute);font-size:.8rem}
+.send{width:100%;border:0;background:var(--ok);color:#fff;font:inherit;font-weight:700;padding:12px;border-radius:10px;cursor:pointer}
+.send:disabled{opacity:.45;cursor:not-allowed}
+.link{background:none;border:0;color:var(--mute);font:inherit;font-size:.85rem;text-decoration:underline;cursor:pointer;margin-top:8px}
+.row{margin-bottom:12px}
+.lab{display:flex;justify-content:space-between;gap:10px;font-size:.92rem;margin-bottom:4px}
+.lab small{color:var(--mute);font-weight:400}
+.lab b{white-space:nowrap}
+.track{background:var(--track);border-radius:6px;height:22px;overflow:hidden}
+.fill{height:100%;background:var(--bar);border-radius:6px;transition:width .6s ease}
+.fill.top{background:var(--bar2)}
+.row.hit .track{outline:2px solid var(--ok)}
+.concl{border-left:5px solid var(--bar2)}
+.concl p{margin:0;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}#fp.holding .scan{animation:none;top:50%}}
+</style>
+</head>
+<body>
+<main>
+<h1>Seguridad vial en Riberalta</h1>
+<p class="sub">Pon tu huella, responde y mira cómo cambian los porcentajes.</p>
+
+<section class="card adm hidden" id="adminCard"><h2>Panel del administrador</h2>
+<small style="margin:0 0 8px">Solo tú ves esto. Las demás personas ven únicamente el registro.</small>
+<h3 style="margin:14px 0 6px;font-size:1rem">Personas registradas (<span id="regN">0</span>)</h3>
+<div id="regs"></div>
+<div class="bt"><button class="p" id="csv">Descargar registros (CSV)</button></div>
+<small id="admMsg"></small></section>
+<section class="card hidden" id="statsCard">
+<div class="stats">
+<div><b id="tot">0</b><span>personas registradas</span><span id="mode">Solo en este dispositivo</span></div>
+<div style="text-align:right"><span id="gen"></span></div>
+</div>
+</section>
+
+<section class="card pad" id="padCard">
+<h2 style="margin:0">Registro con huella</h2>
+<button id="fp" aria-label="Mantén presionado para escanear tu huella">
+<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 28a20 20 0 0 1 40 0"/><path d="M18 56c-3-8-4-14-4-22a18 18 0 0 1 36 0c0 6 0 10 2 16"/><path d="M24 58c-2-6-3-12-3-24a11 11 0 0 1 22 0c0 8 1 14 3 20"/><path d="M31 58c-1-8-2-14-2-24a3 3 0 0 1 6 0c0 8 1 14 3 22"/></svg>
+<span class="scan"></span>
+</button>
+<div class="prog"><i id="pg"></i></div>
+<div id="msg">Mantén presionado el círculo 2 segundos.</div>
+</section>
+
+<section class="card" id="form">
+<h2>Huella verificada <span id="hid" style="color:var(--ok)"></span></h2>
+<div class="ru"><label for="ru">Tu RU (Registro Universitario)</label><input id="ru" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="Ej: 2021045"><small id="rum">Solo números, de 5 a 10 dígitos.</small></div>
+<div class="ru" id="nmBox" style="display:none"><label for="nom" id="nml">Nombre completo</label><input id="nom" autocomplete="off" placeholder="APELLIDOS Y NOMBRES" style="letter-spacing:0"><small id="nms"></small></div>
+<div id="qs"></div>
+<button class="send" id="send" disabled>Registrar mis respuestas</button>
+</section>
+
+<div id="charts" class="hidden"></div>
+<button class="link hidden" id="rst">Reiniciar todo a 0</button>
+
+<section class="card concl hidden" id="conclCard" style="margin-top:16px"><h2>Conclusión para la exposición</h2><p id="concl"></p></section>
+</main>
+<script>
+const Q=[
+{t:"1. Nivel de seguridad vial",ask:"¿Qué tan seguro es el tránsito?",d:["Muy seguro","Seguro","Poco seguro","Nada seguro"],c:[5,19,67,29]},
+{t:"2. Conocimiento de las señales de tránsito",ask:"¿Conoces las señales de tránsito?",d:["Conoce todas","Solo algunas","Ninguna"],c:[42,65,13]},
+{t:"3. Estado y suficiencia de la señalización",ask:"¿Cómo está la señalización?",d:["Suficiente y en buen estado","Es suficiente","Está deteriorada","Es insuficiente"],c:[18,30,22,50]},
+{t:"4. Participación por género",ask:"Eres",d:["Masculino","Femenino"],c:[70,50]}
+];
+let cnt,total,hits=[],sel=[],pid=0,regs=[],recs=[],DB=null,canReset=true;
+const $=id=>document.getElementById(id);
+const pct=v=>(total?v/total*100:0).toFixed(2).replace(".",",")+"%";
+function conclusion(){
+  if(!total){$("concl").textContent="Aún no hay datos. La conclusión aparecerá cuando la primera persona registre sus respuestas.";return}
+  const top=i=>Q[i].d[cnt[i].indexOf(Math.max(...cnt[i]))].toLowerCase();
+  $("concl").textContent="Con "+total+" persona"+(total>1?"s":"")+": la respuesta más común sobre seguridad vial es «"+top(0)+"», sobre las señales «"+top(1)+"» y sobre la señalización «"+top(2)+"».";
+}
+function render(first){
+  $("tot").textContent=total;conclusion();
+  $("gen").innerHTML="Hombres <b>"+cnt[3][0]+"</b> ("+pct(cnt[3][0])+")<br>Mujeres <b>"+cnt[3][1]+"</b> ("+pct(cnt[3][1])+")";
+  if(first)$("charts").innerHTML=Q.map((q,i)=>'<section class="card"><h2>'+q.t+'</h2>'+q.d.map((x,j)=>'<div class="row" id="r'+i+'_'+j+'"><div class="lab"><span>'+x+'</span><b></b></div><div class="track"><div class="fill"></div></div></div>').join("")+'</section>').join("");
+  Q.forEach((q,i)=>{const m=Math.max(...cnt[i]);q.d.forEach((x,j)=>{
+    const r=$("r"+i+"_"+j);
+    r.querySelector("b").innerHTML=cnt[i][j]+' <small>('+pct(cnt[i][j])+')</small>';
+    const f=r.querySelector(".fill");f.style.width=(total?cnt[i][j]/total*100:0)+"%";f.classList.toggle("top",m>0&&cnt[i][j]===m);
+    r.classList.toggle("hit",hits[i]===j);
+  })});
+}
+function localInit(){recs=[];hits=[];cnt=Q.map(q=>q.d.map(()=>0));total=0;regs=[];renderRegs();render(true);closeForm();$("msg").textContent="Mantén presionado el círculo 2 segundos."}
+function apply(){cnt=Q.map(q=>q.d.map(()=>0));recs.forEach(r=>r.a.forEach((v,k)=>cnt[k][v]++));total=recs.length;regs=recs;renderRegs();render(false)}
+async function reset(){
+  if(!DB){localInit();return}
+  if(!confirm("¿Borrar TODOS los registros compartidos?"))return;
+  try{await Promise.all(recs.map(r=>DB.doc("registros/"+r._id).delete()));hits=[]}catch(e){$("msg").textContent="No se pudo borrar. Solo el dueño puede reiniciar."}
+}
+function renderRegs(){
+  $("regN").textContent=regs.length;
+  $("regs").innerHTML=regs.length?regs.slice().reverse().map((r,k)=>'<div><div><b>'+r.nombre+'</b><br><span>RU '+r.ru+'</span></div><span style="text-align:right">#'+(regs.length-k)+'<br>'+r.h+'</span></div>').join(""):'<span>Nadie registrado todavía.</span>';
+}
+const validRU=()=>/^\d{5,10}$/.test($("ru").value.trim());
+let DIR={"2021045":"MAMANI QUISPE JUAN CARLOS","2022118":"RODRIGUEZ SUAREZ MARIA FERNANDA","2020333":"CHAVEZ MENACHO LUIS ALBERTO","2023007":"VACA JUSTINIANO ANA LUCIA","2019876":"MOREIRA ZABALA DIEGO ARMANDO"};
+function lookup(){
+  const v=$("ru").value.trim(),box=$("nmBox"),n=$("nom");
+  if(!validRU()){box.style.display="none";n.value="";n.readOnly=false;return}
+  box.style.display="block";
+  if(DIR[v]){n.value=DIR[v];n.readOnly=true;$("nml").textContent="Estudiante encontrado";$("nms").textContent="Nombre según el registro universitario (demo)."}
+  else{if(n.readOnly)n.value="";n.readOnly=false;$("nml").textContent="Nombre completo";$("nms").textContent="RU no encontrado en el registro demo. Escribe tus apellidos y nombres."}
+}
+$("nom").oninput=e=>{e.target.value=e.target.value.toUpperCase();check()};
+function dirText(){return Object.entries(DIR).map(([k,v])=>k+", "+v).join("\n")}
+function loadDir(t){const m={};(t||"").split("\n").forEach(l=>{const x=l.match(/^\s*(\d{5,10})\s*[,;\t ]\s*(.+?)\s*$/);if(x)m[x[1]]=x[2].toUpperCase()});DIR=m;lookup()}
+function check(){$("send").disabled=!(validRU()&&$("nom").value.trim().length>=5&&[0,1,2,3].every(k=>sel[k]!==undefined))}
+function buildForm(){
+  $("ru").value="";lookup();$("rum").textContent="Solo números, de 5 a 10 dígitos.";$("rum").className="";
+  $("qs").innerHTML=[3,0,1,2].map(i=>'<div class="q"><p>'+Q[i].ask+'</p><div class="opts">'+Q[i].d.map((x,j)=>'<button data-i="'+i+'" data-j="'+j+'" aria-pressed="false">'+x+'</button>').join("")+'</div></div>').join("");
+  sel=[];$("send").disabled=true;
+  $("qs").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;sel[i]=+b.dataset.j;
+    b.parentNode.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+    check();
+  });
+}
+function openForm(){pid=Math.floor(1000+Math.random()*9000);$("hid").textContent="· ID H-"+pid;buildForm();$("form").classList.add("show");$("form").scrollIntoView({behavior:"smooth",block:"center"})}
+function closeForm(){$("form").classList.remove("show");$("fp").classList.remove("done","holding");$("pg").style.width="0"}
+$("ru").oninput=e=>{e.target.value=e.target.value.replace(/\D/g,"");$("rum").className="";lookup();check()};
+$("send").onclick=async()=>{
+  const ru=$("ru").value.trim();
+  const nombre=$("nom").value.trim().toUpperCase();
+  const rec={ru,nombre,id:pid,a:sel.slice(0,4),ts:Date.now(),h:new Date().toLocaleTimeString("es-BO",{hour:"2-digit",minute:"2-digit"})};
+  const n=recs.length+1;let online=!!DB;
+  if(DB){try{await DB.collection("registros").add(rec)}catch(e){online=false}}
+  if(!online){rec._id="local"+Date.now();recs=recs.concat([rec]);apply()}
+  hits=rec.a.slice();render(false);closeForm();
+  $("msg").textContent="¡Gracias, "+nombre+"!"+(canReset?" Eres la persona #"+n+".":"")+(online||!DB?"":" (no se pudo guardar en línea).")+" Otra persona puede poner su huella.";
+  if(canReset)$("charts").scrollIntoView({behavior:"smooth"});
+};
+$("rst").onclick=reset;
+// huella: mantener presionado
+const fp=$("fp");let t=null,p=0;
+function start(){if(t||fp.classList.contains("done"))return;fp.classList.add("holding");$("msg").textContent="Escaneando…";p=0;
+  t=setInterval(()=>{p+=2.5;$("pg").style.width=p+"%";if(p>=100){clearInterval(t);t=null;fp.classList.remove("holding");fp.classList.add("done");$("msg").textContent="Huella reconocida ✔";openForm()}},50)}
+function cancel(){if(!t)return;clearInterval(t);t=null;fp.classList.remove("holding");$("pg").style.width="0";$("msg").textContent="Muy rápido. Mantén presionado hasta completar la barra."}
+fp.addEventListener("pointerdown",e=>{e.preventDefault();start()});
+["pointerup","pointerleave","pointercancel"].forEach(ev=>fp.addEventListener(ev,cancel));
+fp.addEventListener("keydown",e=>{if((e.key===" "||e.key==="Enter")&&!e.repeat){e.preventDefault();start()}});
+fp.addEventListener("keyup",cancel);
+fp.addEventListener("contextmenu",e=>e.preventDefault());
+localInit();
+function showAdmin(on){canReset=on;["adminCard","statsCard","charts","conclCard","rst"].forEach(id=>$(id).classList.toggle("hidden",!on))}
+(async()=>{
+  let admin=true;
+  try{
+    if(window.claude){
+      const db=await claude.use("db");
+      if(db){
+        const user=await claude.use("user");
+        admin=user?user.canEdit():false;
+        DB=db;
+        try{const d=await db.doc("config/directorio").get();if(d.exists)loadDir(d.data().text)}catch(e){}
+        if(admin){
+          $("mode").textContent="Compartido en vivo";
+          db.collection("registros").onSnapshot(snap=>{
+            recs=snap.docs.map(d=>({...d.data(),_id:d.id})).sort((a,b)=>a.ts-b.ts);
+            apply();
+          },()=>{DB=null;$("mode").textContent="Solo en este dispositivo"});
+        }
+      }
+    }
+  }catch(e){}
+  showAdmin(admin);
+})();
+$("csv").onclick=async()=>{
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  const rows=[["N","RU","Nombre","Hora","ID huella"].concat(Q.map(x=>x.t.slice(3)))].concat(recs.map((r,k)=>[k+1,r.ru,r.nombre,r.h,"H-"+r.id].concat(r.a.map((v,i)=>Q[i].d[v]))));
+  const data="\ufeff"+rows.map(r=>r.map(q).join(",")).join("\n");
+  try{const dl=await claude.use("downloads");if(!dl)throw 0;await dl.save({filename:"registros-seguridad-vial.csv",data})}
+  catch(e){const a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(data);a.download="registros.csv";a.click()}
+};
+</script>
+</body>
+</html>
